@@ -25,7 +25,7 @@ models/customer_cluster.pkl
 models/api_key.txt
 
 # Data file — upload separately or use Render disk
-# data/Online_Retail.xlsx   ← uncomment if file is too large
+data/Online_Retail.xlsx
 
 # OS
 .DS_Store
