@@ -1,0 +1,1895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RetailIQ — Business Intelligence Platform</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* =====================================================
+   SUPERSET-STYLE THEME — Deep Navy + Electric Blue
+   ===================================================== */
+:root {
+  /* Core palette — Superset structure, custom color */
+  --nav-bg:       #1a1f36;      /* top navbar dark navy */
+  --nav-border:   #2d3561;
+  --sidebar-bg:   #f7f8fc;      /* Superset uses light sidebar */
+  --sidebar-border: #e8eaf0;
+  --page-bg:      #f0f2f8;      /* light page background like Superset */
+  --card-bg:      #ffffff;
+  --card-border:  #dde1ee;
+  --card-shadow:  0 1px 4px rgba(26,31,54,0.08), 0 4px 16px rgba(26,31,54,0.04);
+
+  /* Brand accent — electric blue */
+  --blue:         #2563eb;
+  --blue-light:   #3b82f6;
+  --blue-dark:    #1d4ed8;
+  --blue-ghost:   rgba(37,99,235,0.08);
+  --blue-border:  rgba(37,99,235,0.2);
+
+  /* Text */
+  --text-primary:   #1a1f36;
+  --text-secondary: #525f7f;
+  --text-muted:     #8898aa;
+  --text-white:     #ffffff;
+  --text-nav:       #cbd5e1;
+
+  /* Status */
+  --green:   #10b981;
+  --red:     #ef4444;
+  --amber:   #f59e0b;
+  --purple:  #8b5cf6;
+
+  /* Sizes */
+  --nav-h:      56px;
+  --sidebar-w:  220px;
+  --radius:     6px;
+  --radius-lg:  10px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--page-bg);
+  color: var(--text-primary);
+  min-height: 100vh;
+  font-size: 14px;
+}
+
+/* =====================================================
+   TOP NAVBAR — exactly like Superset
+   ===================================================== */
+.topnav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: var(--nav-h);
+  background: var(--nav-bg);
+  border-bottom: 1px solid var(--nav-border);
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  gap: 32px;
+  z-index: 1000;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.nav-logo-icon {
+  width: 28px; height: 28px;
+  background: linear-gradient(135deg, var(--blue), #60a5fa);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 800;
+  color: white;
+  font-family: 'Inter', sans-serif;
+  letter-spacing: -0.5px;
+}
+
+.nav-brand-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: white;
+  letter-spacing: -0.3px;
+}
+
+.nav-brand-tag {
+  font-size: 10px;
+  color: #60a5fa;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  background: rgba(96,165,250,0.12);
+  border: 1px solid rgba(96,165,250,0.25);
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-left: 4px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+}
+
+.nav-link {
+  color: var(--text-nav);
+  text-decoration: none;
+  font-size: 13.5px;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nav-link:hover { color: white; background: rgba(255,255,255,0.08); }
+.nav-link.active { color: white; background: rgba(37,99,235,0.3); }
+
+.nav-link svg { width:14px; height:14px; opacity:0.8; }
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: auto;
+}
+
+.api-pill {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.api-pill-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #60a5fa;
+  padding: 0 10px;
+  background: rgba(37,99,235,0.2);
+  border-right: 1px solid rgba(255,255,255,0.1);
+  height: 32px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.api-pill input {
+  background: none;
+  border: none;
+  outline: none;
+  color: #cbd5e1;
+  font-size: 12px;
+  font-family: 'Fira Code', monospace;
+  width: 180px;
+  padding: 0 10px;
+  height: 32px;
+}
+
+.api-pill input::placeholder { color: #475569; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 14px;
+  height: 32px;
+  border-radius: var(--radius);
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: none;
+  text-decoration: none;
+  font-family: 'Inter', sans-serif;
+}
+
+.btn-primary {
+  background: var(--blue);
+  color: white;
+}
+.btn-primary:hover { background: var(--blue-dark); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-nav);
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.btn-ghost:hover { background: rgba(255,255,255,0.08); color:white; }
+
+.status-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-nav);
+  padding: 4px 10px;
+  background: rgba(16,185,129,0.1);
+  border: 1px solid rgba(16,185,129,0.25);
+  border-radius: 20px;
+}
+
+.status-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.4); }
+  50% { box-shadow: 0 0 0 4px rgba(16,185,129,0); }
+}
+
+/* =====================================================
+   LAYOUT
+   ===================================================== */
+.app-layout {
+  display: flex;
+  padding-top: var(--nav-h);
+  min-height: 100vh;
+}
+
+/* =====================================================
+   SIDEBAR — Superset style light sidebar
+   ===================================================== */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--sidebar-border);
+  position: fixed;
+  top: var(--nav-h);
+  bottom: 0;
+  left: 0;
+  overflow-y: auto;
+  padding: 16px 0;
+}
+
+.sidebar-section {
+  padding: 0 8px;
+  margin-bottom: 8px;
+}
+
+.sidebar-section-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 6px 12px;
+  margin-bottom: 2px;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  color: var(--text-secondary);
+  font-size: 13.5px;
+  font-weight: 500;
+  transition: all 0.15s;
+  margin-bottom: 1px;
+}
+
+.sidebar-item:hover {
+  background: rgba(37,99,235,0.06);
+  color: var(--blue);
+}
+
+.sidebar-item.active {
+  background: var(--blue-ghost);
+  color: var(--blue);
+  font-weight: 600;
+}
+
+.sidebar-item svg {
+  width: 16px; height: 16px;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+.sidebar-item.active svg { opacity: 1; }
+
+.sidebar-divider {
+  height: 1px;
+  background: var(--sidebar-border);
+  margin: 10px 16px;
+}
+
+/* =====================================================
+   MAIN CONTENT
+   ===================================================== */
+.main-content {
+  flex: 1;
+  margin-left: var(--sidebar-w);
+  padding: 24px 28px;
+  min-height: calc(100vh - var(--nav-h));
+}
+
+/* Page header — Superset style */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--card-border);
+}
+
+.page-title-group {}
+
+.page-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
+
+.page-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.page-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-page {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  font-family: 'Inter', sans-serif;
+}
+
+.btn-page-primary {
+  background: var(--blue);
+  color: white;
+  border: none;
+}
+.btn-page-primary:hover { background: var(--blue-dark); }
+
+.btn-page-outline {
+  background: white;
+  color: var(--text-secondary);
+  border: 1px solid var(--card-border);
+}
+.btn-page-outline:hover { border-color: var(--blue); color: var(--blue); }
+
+/* =====================================================
+   KPI CARDS — Superset metric style
+   ===================================================== */
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.kpi-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  padding: 20px 22px;
+  box-shadow: var(--card-shadow);
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+
+.kpi-card:hover {
+  box-shadow: 0 4px 20px rgba(37,99,235,0.12);
+  border-color: var(--blue-border);
+  transform: translateY(-1px);
+}
+
+.kpi-card-accent {
+  position: absolute;
+  top: 0; left: 0;
+  width: 3px; height: 100%;
+  background: var(--blue);
+  border-radius: 2px 0 0 2px;
+}
+
+.kpi-card-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  background: var(--blue-ghost);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  margin-bottom: 12px;
+}
+
+.kpi-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 6px;
+}
+
+.kpi-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -1px;
+  line-height: 1;
+}
+
+.kpi-value.sm { font-size: 22px; }
+
+.kpi-trend {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--green);
+  margin-top: 8px;
+}
+
+/* =====================================================
+   CHART CARDS — Superset panel style
+   ===================================================== */
+.charts-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+}
+
+.col-8 { grid-column: span 8; }
+.col-6 { grid-column: span 6; }
+.col-4 { grid-column: span 4; }
+.col-12 { grid-column: span 12; }
+
+.chart-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+}
+
+.chart-card:hover {
+  box-shadow: 0 4px 20px rgba(26,31,54,0.1);
+}
+
+.chart-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px 0;
+  border-bottom: 1px solid var(--card-border);
+  padding-bottom: 12px;
+}
+
+.chart-card-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.chart-card-sub {
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.chart-card-badge {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--blue);
+  background: var(--blue-ghost);
+  border: 1px solid var(--blue-border);
+  padding: 2px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}
+
+.chart-card-body {
+  padding: 16px 18px;
+}
+
+/* =====================================================
+   ML METRICS BAR
+   ===================================================== */
+.ml-metrics-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.ml-metric-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  padding: 16px 20px;
+  box-shadow: var(--card-shadow);
+  text-align: center;
+  border-top: 3px solid var(--blue);
+}
+
+.ml-metric-val {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--blue);
+  letter-spacing: -0.5px;
+}
+
+.ml-metric-lab {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-top: 4px;
+}
+
+/* =====================================================
+   TABLE
+   ===================================================== */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.data-table thead th {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: left;
+  padding: 10px 16px;
+  background: #f8f9fb;
+  border-bottom: 2px solid var(--card-border);
+}
+
+.data-table tbody td {
+  padding: 12px 16px;
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid #f0f2f8;
+}
+
+.data-table tbody tr:hover td {
+  background: #f8f9fb;
+}
+
+.seg-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+/* =====================================================
+   LOADING OVERLAY
+   ===================================================== */
+#loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: #f0f2f8;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  transition: opacity 0.5s;
+}
+
+#loading-overlay.hidden { opacity:0; pointer-events:none; }
+
+.loader-logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.loader-icon {
+  width: 48px; height: 48px;
+  background: linear-gradient(135deg, var(--blue), #60a5fa);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  font-weight: 800;
+  color: white;
+  font-family: 'Inter', sans-serif;
+}
+
+.loader-name {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+.loader-progress {
+  width: 240px;
+  height: 4px;
+  background: #dde1ee;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.loader-progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue), #60a5fa);
+  border-radius: 4px;
+  animation: progress 3s ease-in-out infinite;
+}
+
+@keyframes progress {
+  0% { width:5%; }
+  50% { width:75%; }
+  100% { width:95%; }
+}
+
+.loader-msg {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  font-family: 'Fira Code', monospace;
+}
+
+/* =====================================================
+   PAGES
+   ===================================================== */
+.page { display:none; animation: fadeIn 0.25s ease; }
+.page.active { display:block; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+
+/* =====================================================
+   CHAT PAGE
+   ===================================================== */
+.chat-wrap {
+  display: grid;
+  grid-template-columns: 1fr 270px;
+  gap: 16px;
+  height: calc(100vh - 160px);
+}
+
+.chat-panel {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--card-shadow);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.chat-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--card-border);
+  background: #fafbfe;
+}
+
+.chat-avatar {
+  width: 36px; height: 36px;
+  background: linear-gradient(135deg, var(--blue), #60a5fa);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.chat-ai-name { font-size: 14px; font-weight: 600; color: var(--text-primary); }
+.chat-ai-sub { font-size: 11.5px; color: var(--text-muted); }
+
+.chat-clear-btn {
+  margin-left: auto;
+  background: none;
+  border: 1px solid var(--card-border);
+  color: var(--text-muted);
+  font-size: 11.5px;
+  font-weight: 500;
+  padding: 5px 10px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.15s;
+}
+
+.chat-clear-btn:hover { border-color: var(--red); color: var(--red); }
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: #fafbfe;
+}
+
+.msg { display:flex; gap:10px; animation: fadeIn 0.2s ease; }
+.msg.user { flex-direction:row-reverse; }
+
+.msg-avatar {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+
+.msg.ai .msg-avatar {
+  background: linear-gradient(135deg, var(--blue), #60a5fa);
+  color: white;
+}
+
+.msg.user .msg-avatar {
+  background: #e8eaf0;
+  color: var(--text-secondary);
+}
+
+.msg-bubble {
+  max-width: 74%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13.5px;
+  line-height: 1.65;
+}
+
+.msg.ai .msg-bubble {
+  background: white;
+  border: 1px solid var(--card-border);
+  color: var(--text-primary);
+  border-top-left-radius: 2px;
+}
+
+.msg.user .msg-bubble {
+  background: var(--blue);
+  color: white;
+  border-top-right-radius: 2px;
+}
+
+.msg-bubble strong { font-weight: 600; }
+.msg.ai .msg-bubble strong { color: var(--blue); }
+.msg-bubble code {
+  font-family: 'Fira Code', monospace;
+  font-size: 12px;
+  background: rgba(37,99,235,0.08);
+  color: var(--blue);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+.msg.user .msg-bubble code { background: rgba(255,255,255,0.2); color: white; }
+
+.typing-dots {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  padding: 10px 14px;
+  background: white;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  border-top-left-radius: 2px;
+  width: fit-content;
+}
+
+.typing-dot {
+  width: 7px; height: 7px;
+  background: var(--text-muted);
+  border-radius: 50%;
+  animation: bounce 1.3s infinite;
+}
+.typing-dot:nth-child(2) { animation-delay:0.15s; }
+.typing-dot:nth-child(3) { animation-delay:0.3s; }
+
+@keyframes bounce {
+  0%,60%,100% { transform:translateY(0); opacity:0.4; }
+  30% { transform:translateY(-6px); opacity:1; }
+}
+
+.chat-input-row {
+  padding: 12px 16px;
+  border-top: 1px solid var(--card-border);
+  display: flex;
+  gap: 8px;
+  background: white;
+}
+
+.chat-textarea {
+  flex: 1;
+  background: var(--page-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius);
+  padding: 9px 13px;
+  color: var(--text-primary);
+  font-size: 13.5px;
+  font-family: 'Inter', sans-serif;
+  outline: none;
+  resize: none;
+  height: 40px;
+  max-height: 120px;
+  transition: border-color 0.15s;
+}
+
+.chat-textarea:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(37,99,235,0.08);
+  background: white;
+}
+
+.chat-send-btn {
+  background: var(--blue);
+  color: white;
+  border: none;
+  width: 40px; height: 40px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.15s;
+}
+
+.chat-send-btn:hover { background: var(--blue-dark); }
+.chat-send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* Quick panel */
+.quick-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.quick-panel-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+}
+
+.quick-panel-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--card-border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  background: #fafbfe;
+}
+
+.quick-btns {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.quick-q-btn {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  color: var(--text-secondary);
+  font-size: 12.5px;
+  font-family: 'Inter', sans-serif;
+  padding: 8px 10px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.15s;
+  line-height: 1.4;
+}
+
+.quick-q-btn:hover {
+  background: var(--blue-ghost);
+  border-color: var(--blue-border);
+  color: var(--blue);
+}
+
+.insights-content-box {
+  padding: 14px;
+  min-height: 120px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.insights-text {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.7;
+}
+
+.insights-text strong { color: var(--text-secondary); }
+
+.gen-insights-btn {
+  display: block;
+  width: calc(100% - 20px);
+  margin: 0 10px 12px;
+  background: linear-gradient(135deg, var(--blue), #60a5fa);
+  color: white;
+  border: none;
+  border-radius: var(--radius);
+  padding: 9px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  font-family: 'Inter', sans-serif;
+  transition: all 0.15s;
+}
+
+.gen-insights-btn:hover { opacity: 0.88; }
+
+/* =====================================================
+   TOPIC DROPDOWN QUESTIONS
+   ===================================================== */
+.topics-container {
+  max-height: calc(100vh - 320px);
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #dde1ee transparent;
+}
+
+.topic-group {
+  border-bottom: 1px solid var(--card-border);
+}
+
+.topic-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  cursor: pointer;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background: #fafbfe;
+  user-select: none;
+  transition: all 0.15s;
+}
+
+.topic-header:hover {
+  background: var(--blue-ghost);
+  color: var(--blue);
+}
+
+.topic-header.open {
+  color: var(--blue);
+  background: var(--blue-ghost);
+  border-bottom: 1px solid var(--blue-border);
+}
+
+.topic-arrow {
+  font-size: 12px;
+  transition: transform 0.2s;
+  color: var(--text-muted);
+}
+
+.topic-header.open .topic-arrow {
+  transform: rotate(180deg);
+  color: var(--blue);
+}
+
+.topic-questions {
+  display: none;
+  flex-direction: column;
+  padding: 6px 8px;
+  gap: 2px;
+  background: white;
+}
+
+.topic-questions.open {
+  display: flex;
+  animation: slideDown 0.2s ease;
+}
+
+@keyframes slideDown {
+  from { opacity:0; transform:translateY(-4px); }
+  to { opacity:1; transform:translateY(0); }
+}
+
+.quick-panel-header-count {
+  font-size: 10px;
+  background: var(--blue-ghost);
+  color: var(--blue);
+  border: 1px solid var(--blue-border);
+  border-radius: 20px;
+  padding: 1px 7px;
+  margin-left: auto;
+  font-weight: 600;
+}
+
+
+/* =====================================================
+   MODEL EVAL
+   ===================================================== */
+#model-eval-text {
+  font-size: 13.5px;
+  line-height: 2.2;
+  color: var(--text-secondary);
+}
+#model-eval-text .ev-label { font-weight: 600; color: var(--text-primary); }
+#model-eval-text .ev-val { font-family: 'Fira Code', monospace; font-size: 12px; color: var(--blue); }
+
+/* =====================================================
+   TOAST
+   ===================================================== */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--text-primary);
+  color: white;
+  border-radius: var(--radius);
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  z-index: 9999;
+  display: none;
+  animation: fadeIn 0.3s ease;
+  box-shadow: 0 4px 20px rgba(26,31,54,0.3);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #dde1ee; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #c0c8e0; }
+
+@media (max-width: 1100px) {
+  .col-8,.col-4,.col-6 { grid-column: span 12; }
+  .chat-wrap { grid-template-columns: 1fr; }
+  .quick-panel { display: none; }
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading-overlay">
+  <div class="loader-logo">
+    <div class="loader-icon">R</div>
+    <div class="loader-name">RetailIQ</div>
+  </div>
+  <div class="loader-progress"><div class="loader-progress-bar"></div></div>
+  <div class="loader-msg" id="loading-msg">Initializing platform...</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- TOP NAVBAR -->
+<nav class="topnav">
+  <div class="nav-brand">
+    <div class="nav-logo-icon">R</div>
+    <span class="nav-brand-name">RetailIQ</span>
+    <span class="nav-brand-tag">AI-POWERED</span>
+  </div>
+
+  <div class="nav-links">
+    <div class="nav-link active" onclick="showPage('dashboard',this)">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-link" onclick="showPage('revenue',this)">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+      Revenue
+    </div>
+    <div class="nav-link" onclick="showPage('customers',this)">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+      Customers
+    </div>
+    <div class="nav-link" onclick="showPage('products',this)">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+      Products
+    </div>
+    <div class="nav-link" onclick="showPage('forecast',this)">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M2 20h20M4 20V10l8-6 8 6v10"/></svg>
+      Forecast
+    </div>
+    <div class="nav-link" onclick="showPage('segments',this)">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20M2 12h20"/></svg>
+      ML Segments
+    </div>
+    <div class="nav-link" onclick="showPage('chat',this)">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      AI Chat
+    </div>
+  </div>
+
+  <div class="nav-right">
+    <div class="api-pill">
+      <span class="api-pill-label">🔑 API</span>
+      <input type="password" id="api-key-input" placeholder="AIza... (Gemini free key)">
+    </div>
+    <button class="btn btn-primary" onclick="saveApiKey()">Save</button>
+    <div class="status-badge"><span class="status-dot"></span>Online</div>
+  </div>
+</nav>
+
+<!-- LAYOUT -->
+<div class="app-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Analytics</div>
+      <div class="sidebar-item active" onclick="showPage('dashboard',this)">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
+        Overview
+      </div>
+      <div class="sidebar-item" onclick="showPage('revenue',this)">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
+        Revenue Analysis
+      </div>
+      <div class="sidebar-item" onclick="showPage('customers',this)">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        Customers
+      </div>
+      <div class="sidebar-item" onclick="showPage('products',this)">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        Products
+      </div>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Predictions</div>
+      <div class="sidebar-item" onclick="showPage('forecast',this)">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M2 20h20M4 20V10l8-6 8 6v10"/></svg>
+        Revenue Forecast
+      </div>
+      <div class="sidebar-item" onclick="showPage('segments',this)">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20M2 12h20"/></svg>
+        ML Segments
+      </div>
+    </div>
+
+    <div class="sidebar-divider"></div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Intelligence</div>
+      <div class="sidebar-item" onclick="showPage('chat',this)">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        AI Analyst Chat
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div class="page-title-group">
+          <div class="page-title">Overview Dashboard</div>
+          <div class="page-subtitle">Business performance summary · FY 2010–2011</div>
+        </div>
+        <div class="page-actions">
+          <button class="btn-page btn-page-outline">↓ Export</button>
+          <button class="btn-page btn-page-primary">+ New Report</button>
+        </div>
+      </div>
+      <div class="kpi-row" id="kpi-grid"></div>
+      <div class="charts-grid">
+        <div class="chart-card col-8">
+          <div class="chart-card-header">
+            <div>
+              <div class="chart-card-title">Monthly Revenue Trend</div>
+              <div class="chart-card-sub">Aggregate revenue by calendar month</div>
+            </div>
+            <span class="chart-card-badge">2010–2011</span>
+          </div>
+          <div class="chart-card-body"><canvas id="chart-monthly" height="190"></canvas></div>
+        </div>
+        <div class="chart-card col-4">
+          <div class="chart-card-header">
+            <div>
+              <div class="chart-card-title">Revenue by Country</div>
+              <div class="chart-card-sub">Geographic distribution</div>
+            </div>
+          </div>
+          <div class="chart-card-body"><canvas id="chart-country" height="190"></canvas></div>
+        </div>
+        <div class="chart-card col-6">
+          <div class="chart-card-header">
+            <div>
+              <div class="chart-card-title">Sales by Hour</div>
+              <div class="chart-card-sub">Peak transaction windows</div>
+            </div>
+          </div>
+          <div class="chart-card-body"><canvas id="chart-hourly" height="170"></canvas></div>
+        </div>
+        <div class="chart-card col-6">
+          <div class="chart-card-header">
+            <div>
+              <div class="chart-card-title">Sales by Day of Week</div>
+              <div class="chart-card-sub">Weekly trading patterns</div>
+            </div>
+          </div>
+          <div class="chart-card-body"><canvas id="chart-dow" height="170"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVENUE -->
+    <div class="page" id="page-revenue">
+      <div class="page-header">
+        <div class="page-title-group">
+          <div class="page-title">Revenue Analysis</div>
+          <div class="page-subtitle">Detailed sales performance and product breakdown</div>
+        </div>
+      </div>
+      <div class="charts-grid">
+        <div class="chart-card col-12">
+          <div class="chart-card-header">
+            <div><div class="chart-card-title">Daily Revenue — Last 60 Days</div><div class="chart-card-sub">Day-by-day performance</div></div>
+            <span class="chart-card-badge">Historical</span>
+          </div>
+          <div class="chart-card-body"><canvas id="chart-daily" height="170"></canvas></div>
+        </div>
+        <div class="chart-card col-6">
+          <div class="chart-card-header"><div><div class="chart-card-title">Top 10 Products</div><div class="chart-card-sub">By total revenue</div></div></div>
+          <div class="chart-card-body"><canvas id="chart-products-rev" height="250"></canvas></div>
+        </div>
+        <div class="chart-card col-6">
+          <div class="chart-card-header"><div><div class="chart-card-title">RFM Segments</div><div class="chart-card-sub">Customer loyalty tiers</div></div></div>
+          <div class="chart-card-body"><canvas id="chart-rfm" height="250"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CUSTOMERS -->
+    <div class="page" id="page-customers">
+      <div class="page-header">
+        <div class="page-title-group">
+          <div class="page-title">Customer Analytics</div>
+          <div class="page-subtitle">Behavioural segmentation and geographic analysis</div>
+        </div>
+      </div>
+      <div class="charts-grid">
+        <div class="chart-card col-6">
+          <div class="chart-card-header"><div><div class="chart-card-title">Customer Segments (RFM)</div><div class="chart-card-sub">Loyalty tier distribution</div></div></div>
+          <div class="chart-card-body"><canvas id="chart-rfm2" height="260"></canvas></div>
+        </div>
+        <div class="chart-card col-6">
+          <div class="chart-card-header"><div><div class="chart-card-title">Revenue by Country</div><div class="chart-card-sub">Top 10 markets</div></div></div>
+          <div class="chart-card-body"><canvas id="chart-country2" height="260"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUCTS -->
+    <div class="page" id="page-products">
+      <div class="page-header">
+        <div class="page-title-group">
+          <div class="page-title">Product Performance</div>
+          <div class="page-subtitle">Portfolio revenue rankings across full trading period</div>
+        </div>
+      </div>
+      <div class="charts-grid">
+        <div class="chart-card col-12">
+          <div class="chart-card-header">
+            <div><div class="chart-card-title">Top 10 Products by Revenue</div><div class="chart-card-sub">All-time cumulative performance</div></div>
+            <span class="chart-card-badge">All Time</span>
+          </div>
+          <div class="chart-card-body"><canvas id="chart-products2" height="210"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FORECAST -->
+    <div class="page" id="page-forecast">
+      <div class="page-header">
+        <div class="page-title-group">
+          <div class="page-title">Revenue Forecast</div>
+          <div class="page-subtitle">Gradient Boosting ML model · 30-day forward prediction</div>
+        </div>
+        <span class="chart-card-badge" style="align-self:center;">Gradient Boosting</span>
+      </div>
+      <div class="ml-metrics-row" id="ml-metrics"></div>
+      <div class="charts-grid">
+        <div class="chart-card col-12">
+          <div class="chart-card-header">
+            <div><div class="chart-card-title">30-Day Revenue Forecast</div><div class="chart-card-sub">Historical actuals + ML projections</div></div>
+          </div>
+          <div class="chart-card-body"><canvas id="chart-forecast" height="190"></canvas></div>
+        </div>
+        <div class="chart-card col-6">
+          <div class="chart-card-header"><div><div class="chart-card-title">Feature Importance</div><div class="chart-card-sub">Predictive variable weights</div></div></div>
+          <div class="chart-card-body"><canvas id="chart-feature-imp" height="230"></canvas></div>
+        </div>
+        <div class="chart-card col-6">
+          <div class="chart-card-header"><div><div class="chart-card-title">Model Evaluation</div><div class="chart-card-sub">Test set performance metrics</div></div></div>
+          <div class="chart-card-body"><div id="model-eval-text" style="margin-top:8px;"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEGMENTS -->
+    <div class="page" id="page-segments">
+      <div class="page-header">
+        <div class="page-title-group">
+          <div class="page-title">ML Customer Segments</div>
+          <div class="page-subtitle">K-Means clustering on RFM feature space · k=4</div>
+        </div>
+      </div>
+      <div class="charts-grid">
+        <div class="chart-card col-6">
+          <div class="chart-card-header">
+            <div><div class="chart-card-title">Cluster Distribution</div><div class="chart-card-sub">Customer count per segment</div></div>
+            <span class="chart-card-badge">K-Means</span>
+          </div>
+          <div class="chart-card-body"><canvas id="chart-clusters" height="250"></canvas></div>
+        </div>
+        <div class="chart-card col-6">
+          <div class="chart-card-header"><div><div class="chart-card-title">Cluster Statistics</div><div class="chart-card-sub">Avg. RFM metrics per segment</div></div></div>
+          <div class="chart-card-body">
+            <div style="overflow-x:auto;">
+              <table class="data-table" id="cluster-table"></table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHAT -->
+    <div class="page" id="page-chat">
+      <div class="page-header">
+        <div class="page-title-group">
+          <div class="page-title">AI Analyst Chat</div>
+          <div class="page-subtitle">Powered by Claude Opus · Full dataset context loaded</div>
+        </div>
+      </div>
+      <div class="chat-wrap">
+        <div class="chat-panel">
+          <div class="chat-panel-header">
+            <div class="chat-avatar">🤖</div>
+            <div>
+              <div class="chat-ai-name">RetailIQ Analyst</div>
+              <div class="chat-ai-sub">Claude Opus · 397,884 transactions in context</div>
+            </div>
+            <button class="chat-clear-btn" onclick="clearChat()">Clear</button>
+          </div>
+          <div class="chat-messages" id="chat-messages">
+            <div class="msg ai">
+              <div class="msg-avatar">🤖</div>
+              <div class="msg-bubble">
+                👋 Hello! I'm your RetailIQ AI analyst with full access to your retail dataset — <strong>397,884 transactions</strong>, <strong>£8.9M revenue</strong>, across 38 countries.<br><br>
+                Ask me about revenue trends, customer behaviour, product performance, forecasts, or any business question.<br><br>
+                <em>Add your <strong>free Gemini API key</strong> in the top bar (AIza...) and click Save Key.</em>
+              </div>
+            </div>
+          </div>
+          <div class="chat-input-row">
+            <textarea class="chat-textarea" id="chat-input" placeholder="Ask about your business data..." onkeydown="handleKey(event)"></textarea>
+            <button class="chat-send-btn" id="send-btn" onclick="sendMessage()">➤</button>
+          </div>
+        </div>
+
+        <div class="quick-panel">
+          <div class="quick-panel-card" style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+            <div class="quick-panel-header" style="display:flex;align-items:center;gap:8px;">
+              📚 50 Business Questions
+              <span class="quick-panel-header-count">10 Topics</span>
+            </div>
+            <div class="topics-container" id="topics-container">
+
+              <div class="topic-group">
+                <div class="topic-header" onclick="toggleTopic(this)">
+                  <span>📅 Monthly Sales</span><span class="topic-arrow">▾</span>
+                </div>
+                <div class="topic-questions">
+                  <button class="quick-q-btn" onclick="askQ('What were the total sales in December 2011?')">Dec 2011 total sales?</button>
+                  <button class="quick-q-btn" onclick="askQ('Which month had the highest revenue in 2011?')">Highest revenue month?</button>
+                  <button class="quick-q-btn" onclick="askQ('Compare sales in January vs June 2011.')">Jan vs Jun 2011?</button>
+                  <button class="quick-q-btn" onclick="askQ('What was the average monthly revenue across 2011?')">Avg monthly revenue?</button>
+                  <button class="quick-q-btn" onclick="askQ('Which month had the lowest sales and what caused it?')">Lowest sales month?</button>
+                </div>
+              </div>
+
+              <div class="topic-group">
+                <div class="topic-header" onclick="toggleTopic(this)">
+                  <span>📦 Product Performance</span><span class="topic-arrow">▾</span>
+                </div>
+                <div class="topic-questions">
+                  <button class="quick-q-btn" onclick="askQ('What are the top 5 best-selling products by revenue?')">Top 5 revenue products?</button>
+                  <button class="quick-q-btn" onclick="askQ('Which product has the highest quantity sold overall?')">Most quantity sold?</button>
+                  <button class="quick-q-btn" onclick="askQ('Which products are underperforming and should be reviewed?')">Underperforming products?</button>
+                  <button class="quick-q-btn" onclick="askQ('What is the average unit price of top 10 products?')">Top 10 avg unit price?</button>
+                  <button class="quick-q-btn" onclick="askQ('What percentage of products drive 80% of revenue (Pareto)?')">Pareto 80/20 analysis?</button>
+                </div>
+              </div>
+
+              <div class="topic-group">
+                <div class="topic-header" onclick="toggleTopic(this)">
+                  <span>👥 Customer Insights</span><span class="topic-arrow">▾</span>
+                </div>
+                <div class="topic-questions">
+                  <button class="quick-q-btn" onclick="askQ('How many unique customers made purchases in 2011?')">Unique customers 2011?</button>
+                  <button class="quick-q-btn" onclick="askQ('Who are the top 5 highest spending customers?')">Top 5 spenders?</button>
+                  <button class="quick-q-btn" onclick="askQ('What is the average number of orders per customer?')">Avg orders per customer?</button>
+                  <button class="quick-q-btn" onclick="askQ('How many customers made only one purchase (one-time buyers)?')">One-time buyers count?</button>
+                  <button class="quick-q-btn" onclick="askQ('What percentage of revenue comes from repeat customers?')">Repeat buyer revenue %?</button>
+                </div>
+              </div>
+
+              <div class="topic-group">
+                <div class="topic-header" onclick="toggleTopic(this)">
+                  <span>🌍 Country & Geography</span><span class="topic-arrow">▾</span>
+                </div>
+                <div class="topic-questions">
+                  <button class="quick-q-btn" onclick="askQ('Which country generates the most revenue after UK?')">Top country after UK?</button>
+                  <button class="quick-q-btn" onclick="askQ('What are the top 5 countries by revenue in the dataset?')">Top 5 countries?</button>
+                  <button class="quick-q-btn" onclick="askQ('Compare average order value in Germany vs France.')">Germany vs France AOV?</button>
+                  <button class="quick-q-btn" onclick="askQ('Which countries have high order value but low volume?')">High value low volume?</button>
+                  <button class="quick-q-btn" onclick="askQ('What percentage of total revenue comes from the UK?')">UK revenue share %?</button>
+                </div>
+              </div>
+
+              <div class="topic-group">
+                <div class="topic-header" onclick="toggleTopic(this)">
+                  <span>⏰ Time & Patterns</span><span class="topic-arrow">▾</span>
+                </div>
+                <div class="topic-questions">
+                  <button class="quick-q-btn" onclick="askQ('What time of day has the highest sales volume?')">Peak sales hours?</button>
+                  <button class="quick-q-btn" onclick="askQ('Which day of the week has the most orders?')">Best sales day?</button>
+                  <button class="quick-q-btn" onclick="askQ('Are there any seasonal trends in the sales data?')">Seasonal trends?</button>
+                  <button class="quick-q-btn" onclick="askQ('How did sales grow from Q1 to Q4 in 2011?')">Q1 to Q4 growth?</button>
+                  <button class="quick-q-btn" onclick="askQ('What hours should we increase staffing based on sales?')">Staffing recommendations?</button>
+                </div>
+              </div>
+
+              <div class="topic-group">
+                <div class="topic-header" onclick="toggleTopic(this)">
+                  <span>💰 Revenue & Orders</span><span class="topic-arrow">▾</span>
+                </div>
+                <div class="topic-questions">
+                  <button class="quick-q-btn" onclick="askQ('What is the total revenue for the entire dataset?')">Total revenue?</button>
+                  <button class="quick-q-btn" onclick="askQ('What is the average order value across all transactions?')">Average order value?</button>
+                  <button class="quick-q-btn" onclick="askQ('What was the highest revenue single day and what drove it?')">Highest revenue day?</button>
+                  <button class="quick-q-btn" onclick="askQ('How many total orders were placed in the dataset?')">Total orders count?</button>
+                  <button class="quick-q-btn" onclick="askQ('What is the revenue trend from November to December 2011?')">Nov to Dec 2011 trend?</button>
+                </div>
+              </div>
+
+              <div class="topic-group">
+                <div class="topic-header" onclick="toggleTopic(this)">
+                  <span>🔮 Forecasting & ML</span><span class="topic-arrow">▾</span>
+                </div>
+                <div class="topic-questions">
+                  <button class="quick-q-btn" onclick="askQ('What is the predicted revenue for the next 30 days?')">Next 30 days forecast?</button>
+                  <button class="quick-q-btn" onclick="askQ('Which features most influence the revenue forecast?')">Top forecast drivers?</button>
+                  <button class="quick-q-btn" onclick="askQ('How accurate is the ML model? Explain R² and MAPE in simple terms.')">Model accuracy explained?</button>
+                  <button class="quick-q-btn" onclick="askQ('Based on trends, will December revenue exceed November 2011?')">Dec vs Nov forecast?</button>
+                  <button class="quick-q-btn" onclick="askQ('What factors could affect forecast accuracy for next year?')">Forecast risk factors?</button>
+                </div>
+              </div>
+
+              <div class="topic-group">
+                <div class="topic-header" onclick="toggleTopic(this)">
+                  <span>🎯 Customer Segments</span><span class="topic-arrow">▾</span>
+                </div>
+                <div class="topic-questions">
+                  <button class="quick-q-btn" onclick="askQ('How many customers are in the Champions segment?')">Champions count?</button>
+                  <button class="quick-q-btn" onclick="askQ('Compare average revenue of Loyal vs At Risk customers.')">Loyal vs At Risk revenue?</button>
+                  <button class="quick-q-btn" onclick="askQ('How should we market differently to each customer segment?')">Segment marketing ideas?</button>
+                  <button class="quick-q-btn" onclick="askQ('Which customer segment has the highest purchase frequency?')">Highest frequency segment?</button>
+                  <button class="quick-q-btn" onclick="askQ('What is the average recency of our best customers?')">Best customers recency?</button>
+                </div>
+              </div>
+
+              <div class="topic-group">
+                <div class="topic-header" onclick="toggleTopic(this)">
+                  <span>📊 Business KPIs</span><span class="topic-arrow">▾</span>
+                </div>
+                <div class="topic-questions">
+                  <button class="quick-q-btn" onclick="askQ('What is the estimated customer lifetime value for top segments?')">Customer lifetime value?</button>
+                  <button class="quick-q-btn" onclick="askQ('What is the customer retention rate based on repeat purchases?')">Retention rate?</button>
+                  <button class="quick-q-btn" onclick="askQ('What is the average revenue generated per customer?')">Revenue per customer?</button>
+                  <button class="quick-q-btn" onclick="askQ('What is the order cancellation rate in this dataset?')">Cancellation rate?</button>
+                  <button class="quick-q-btn" onclick="askQ('What is the basket size — average items per order?')">Avg basket size?</button>
+                </div>
+              </div>
+
+              <div class="topic-group">
+                <div class="topic-header" onclick="toggleTopic(this)">
+                  <span>🚀 Strategy & Growth</span><span class="topic-arrow">▾</span>
+                </div>
+                <div class="topic-questions">
+                  <button class="quick-q-btn" onclick="askQ('What are the top 3 growth opportunities based on this data?')">Top 3 growth opportunities?</button>
+                  <button class="quick-q-btn" onclick="askQ('Which international market should we expand into next?')">Best expansion market?</button>
+                  <button class="quick-q-btn" onclick="askQ('Which products should we promote during the holiday season?')">Holiday season strategy?</button>
+                  <button class="quick-q-btn" onclick="askQ('Give me a full executive summary for a board presentation.')">Executive board summary?</button>
+                  <button class="quick-q-btn" onclick="askQ('What actions should we take to increase revenue by 20% next year?')">20% revenue growth plan?</button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+          <div class="quick-panel-card" style="flex:1;display:flex;flex-direction:column;">
+            <div class="quick-panel-header">AI Insights Report</div>
+            <div class="insights-content-box">
+              <div class="insights-text" id="insights-content">Click "Generate" to get AI-powered strategic insights from your dataset.</div>
+            </div>
+            <button class="gen-insights-btn" onclick="generateInsights()">⚡ Generate Insights</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+let apiKey = localStorage.getItem('retailiq_api_key') || '';
+let chatHistory = [];
+let charts = {};
+let dataLoaded = false;
+if (apiKey) document.getElementById('api-key-input').value = apiKey;
+
+// Superset-style blue palette
+const PALETTE = ['#2563eb','#3b82f6','#60a5fa','#93c5fd','#1d4ed8','#7c3aed','#10b981','#f59e0b','#ef4444','#8b5cf6'];
+
+Chart.defaults.font.family = "'Inter', sans-serif";
+Chart.defaults.font.size = 11;
+Chart.defaults.color = '#8898aa';
+
+function showToast(msg){const el=document.getElementById('toast');el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',3000);}
+async function saveApiKey(){
+  const inp = document.getElementById('api-key-input');
+  const key = inp.value.trim();
+  if(!key){ showToast('⚠️ Please enter your API key first.'); return; }
+  if(key.length < 10){ showToast('❌ Please enter a valid API key'); return; }
+  try {
+    const res = await fetch('/api/save-key',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({api_key: key})
+    });
+    const d = await res.json();
+    if(d.ok){
+      apiKey = key;
+      localStorage.setItem('retailiq_api_key', key);
+      showToast('✅ API key saved — AI chat enabled!');
+      updateKeyStatus(true, key);
+    } else {
+      showToast('❌ ' + d.message);
+    }
+  } catch(e) {
+    // fallback: save locally only
+    apiKey = key;
+    localStorage.setItem('retailiq_api_key', key);
+    showToast('✅ API key saved locally.');
+    updateKeyStatus(true, key);
+  }
+}
+
+function updateKeyStatus(hasKey, key) {
+  const badge = document.getElementById('key-status-badge');
+  if(!badge) return;
+  if(hasKey){
+    badge.style.background = 'rgba(16,185,129,0.15)';
+    badge.style.borderColor = 'rgba(16,185,129,0.4)';
+    badge.style.color = '#10b981';
+    badge.textContent = '🔑 Key Active';
+  } else {
+    badge.style.background = 'rgba(239,68,68,0.1)';
+    badge.style.borderColor = 'rgba(239,68,68,0.3)';
+    badge.style.color = '#ef4444';
+    badge.textContent = '⚠️ No Key';
+  }
+}
+
+async function checkKeyStatus(){
+  try {
+    const d = await fetch('/api/key-status').then(r=>r.json());
+    if(d.has_key){
+      // server has key — use it
+      if(!apiKey) apiKey = 'server-side';
+      updateKeyStatus(true, d.preview);
+      document.getElementById('api-key-input').placeholder = d.preview + ' (saved)';
+    } else if(apiKey){
+      updateKeyStatus(true, apiKey);
+    } else {
+      updateKeyStatus(false, '');
+    }
+  } catch(e) {}
+}
+
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  // update topnav
+  document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active'));
+  // update sidebar
+  document.querySelectorAll('.sidebar-item').forEach(n=>n.classList.remove('active'));
+  // set active on clicked element
+  if(el){
+    el.classList.add('active');
+    // sync the other nav
+    const allItems = document.querySelectorAll('.nav-link, .sidebar-item');
+    // find matching by page
+  }
+  if(dataLoaded) loadPageCharts(name);
+}
+
+function fmtGBP(n){if(n>=1e6)return'£'+(n/1e6).toFixed(1)+'M';if(n>=1e3)return'£'+(n/1e3).toFixed(0)+'K';return'£'+n.toFixed(0);}
+
+function makeChart(id,type,labels,datasets,extra={}){
+  if(charts[id])charts[id].destroy();
+  const ctx=document.getElementById(id);if(!ctx)return;
+  const sc={
+    x:{ticks:{color:'#8898aa',font:{size:10},maxTicksLimit:10},grid:{color:'rgba(0,0,0,0.04)'},border:{color:'#e8eaf0'}},
+    y:{ticks:{color:'#8898aa',font:{size:10}},grid:{color:'rgba(0,0,0,0.05)'},border:{color:'#e8eaf0'}}
+  };
+  charts[id]=new Chart(ctx,{
+    type,data:{labels,datasets},
+    options:{
+      responsive:true,maintainAspectRatio:true,
+      animation:{duration:500,easing:'easeOutCubic'},
+      plugins:{
+        legend:{labels:{color:'#525f7f',font:{size:11,family:"'Inter',sans-serif"},boxWidth:12,padding:16}},
+        tooltip:{backgroundColor:'#1a1f36',borderColor:'rgba(37,99,235,0.3)',borderWidth:1,titleColor:'#60a5fa',bodyColor:'#cbd5e1',titleFont:{family:"'Inter',sans-serif",size:11,weight:'600'},bodyFont:{family:"'Inter',sans-serif",size:12},padding:10,cornerRadius:6}
+      },
+      scales:['bar','line'].includes(type)?sc:{},
+      ...extra
+    }
+  });
+}
+
+function pollStatus(){
+  const el=document.getElementById('loading-msg');
+  const bar=document.querySelector('.loader-progress-bar');
+
+  // First check if already cached for instant load message
+  fetch('/api/status').then(r=>r.json()).then(d=>{
+    if(d.cached){
+      el.textContent='Loading from cache...';
+      if(bar) bar.style.animation='none'; bar && (bar.style.width='90%');
+    } else {
+      el.textContent='First run: training models (one-time, ~3 min)...';
+    }
+  }).catch(()=>{});
+
+  const poll=setInterval(()=>{
+    fetch('/api/status').then(r=>r.json()).then(d=>{
+      // Show real server status message
+      if(d.message && !d.ready) el.textContent=d.message;
+      if(d.ready){
+        clearInterval(poll);
+        el.textContent='Dashboard ready!';
+        if(bar){bar.style.animation='none';bar.style.width='100%';}
+        setTimeout(()=>{
+          dataLoaded=true;
+          document.getElementById('loading-overlay').classList.add('hidden');
+          loadAllData();
+        },400);
+      } else if(d.error){
+        clearInterval(poll);
+        el.textContent='Error: '+d.error;
+        if(bar) bar.style.background='#ef4444';
+      }
+    }).catch(()=>{});
+  },800);
+}
+
+function loadAllData(){loadKPIs();loadDashboardCharts();}
+function loadPageCharts(name){
+  if(name==='revenue')loadRevenueCharts();
+  if(name==='customers')loadCustomerCharts();
+  if(name==='products')loadProductCharts();
+  if(name==='forecast')loadForecastCharts();
+  if(name==='segments')loadSegmentCharts();
+}
+
+async function loadKPIs(){
+  const d=await fetch('/api/kpis').then(r=>r.json());
+  const icons=['💰','📋','👥','📦','🛒','🌍'];
+  document.getElementById('kpi-grid').innerHTML=[
+    {label:'Total Revenue',value:fmtGBP(d.total_revenue),trend:'FY 2010–2011',icon:'💰'},
+    {label:'Total Orders',value:d.total_orders.toLocaleString(),trend:'Unique invoices',icon:'📋'},
+    {label:'Unique Customers',value:d.total_customers.toLocaleString(),trend:'Active buyers',icon:'👥'},
+    {label:'Product SKUs',value:d.total_products.toLocaleString(),trend:'Catalogue size',icon:'📦'},
+    {label:'Avg Order Value',value:'£'+d.avg_order_value,trend:'Per invoice',icon:'🛒'},
+    {label:'Top Market',value:d.top_country,trend:'By revenue',icon:'🌍'},
+  ].map(k=>`
+    <div class="kpi-card">
+      <div class="kpi-card-accent"></div>
+      <div class="kpi-card-icon">${k.icon}</div>
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value ${k.value.length>8?'sm':''}">${k.value}</div>
+      <div class="kpi-trend">${k.trend}</div>
+    </div>`).join('');
+}
+
+async function loadDashboardCharts(){
+  const [monthly,country,hourly,dow]=await Promise.all([
+    fetch('/api/charts/revenue-trend').then(r=>r.json()),
+    fetch('/api/charts/country-revenue').then(r=>r.json()),
+    fetch('/api/charts/hourly-pattern').then(r=>r.json()),
+    fetch('/api/charts/dow-pattern').then(r=>r.json()),
+  ]);
+  makeChart('chart-monthly','line',monthly.map(d=>d.Period),[{label:'Revenue',data:monthly.map(d=>d.Revenue),borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,0.06)',fill:true,tension:0.4,pointRadius:3,pointBackgroundColor:'#2563eb',borderWidth:2}]);
+  makeChart('chart-country','doughnut',country.map(d=>d.Country),[{data:country.map(d=>d.Revenue),backgroundColor:PALETTE,borderWidth:2,borderColor:'#fff'}],{plugins:{legend:{position:'right',labels:{color:'#525f7f',font:{size:10},boxWidth:10}}}});
+  makeChart('chart-hourly','bar',hourly.map(d=>d.Hour+'h'),[{label:'Revenue',data:hourly.map(d=>d.Revenue),backgroundColor:'rgba(37,99,235,0.7)',borderRadius:4,hoverBackgroundColor:'#2563eb'}]);
+  makeChart('chart-dow','bar',dow.map(d=>d.DayName),[{label:'Revenue',data:dow.map(d=>d.Revenue),backgroundColor:PALETTE.slice(0,7),borderRadius:4}],{plugins:{legend:{display:false}}});
+}
+
+async function loadRevenueCharts(){
+  const [ml,rfm,prods]=await Promise.all([fetch('/api/ml/forecast').then(r=>r.json()),fetch('/api/charts/rfm-segments').then(r=>r.json()),fetch('/api/charts/top-products').then(r=>r.json())]);
+  makeChart('chart-daily','line',ml.historical.map(d=>d.InvoiceDate),[{label:'Daily Revenue',data:ml.historical.map(d=>d.Revenue),borderColor:'#10b981',backgroundColor:'rgba(16,185,129,0.06)',fill:true,tension:0.3,pointRadius:2,borderWidth:2}]);
+  makeChart('chart-products-rev','bar',prods.map(d=>d.Description.substring(0,22)+'…'),[{label:'Revenue',data:prods.map(d=>d.Revenue),backgroundColor:PALETTE,borderRadius:4}],{indexAxis:'y',plugins:{legend:{display:false}}});
+  makeChart('chart-rfm','doughnut',rfm.map(d=>d.Segment),[{data:rfm.map(d=>d.Count),backgroundColor:PALETTE,borderWidth:2,borderColor:'#fff'}],{plugins:{legend:{position:'right',labels:{color:'#525f7f',font:{size:11},boxWidth:10}}}});
+}
+
+async function loadCustomerCharts(){
+  const [rfm,country]=await Promise.all([fetch('/api/charts/rfm-segments').then(r=>r.json()),fetch('/api/charts/country-revenue').then(r=>r.json())]);
+  makeChart('chart-rfm2','pie',rfm.map(d=>d.Segment),[{data:rfm.map(d=>d.Count),backgroundColor:PALETTE,borderWidth:2,borderColor:'#fff'}],{plugins:{legend:{position:'right',labels:{color:'#525f7f',font:{size:11},boxWidth:10}}}});
+  makeChart('chart-country2','bar',country.map(d=>d.Country),[{label:'Revenue',data:country.map(d=>d.Revenue),backgroundColor:PALETTE,borderRadius:4}],{plugins:{legend:{display:false}}});
+}
+
+async function loadProductCharts(){
+  const prods=await fetch('/api/charts/top-products').then(r=>r.json());
+  makeChart('chart-products2','bar',prods.map(d=>d.Description.substring(0,26)),[{label:'Revenue (£)',data:prods.map(d=>d.Revenue),backgroundColor:PALETTE,borderRadius:4}],{plugins:{legend:{display:false}}});
+}
+
+async function loadForecastCharts(){
+  const ml=await fetch('/api/ml/forecast').then(r=>r.json());
+  const m=ml.metrics;
+  document.getElementById('ml-metrics').innerHTML=[
+    {val:`${(m.r2*100).toFixed(1)}%`,lab:'R² Score'},
+    {val:`£${m.mae}`,lab:'Mean Abs Error'},
+    {val:`£${m.rmse}`,lab:'RMSE'},
+    {val:`${m.mape}%`,lab:'MAPE'},
+  ].map(x=>`<div class="ml-metric-card"><div class="ml-metric-val">${x.val}</div><div class="ml-metric-lab">${x.lab}</div></div>`).join('');
+
+  const hD=ml.historical.slice(-30).map(d=>d.InvoiceDate),hV=ml.historical.slice(-30).map(d=>d.Revenue);
+  const fD=ml.forecast.map(d=>d.Date),fV=ml.forecast.map(d=>d.Predicted_Revenue);
+  makeChart('chart-forecast','line',[...hD,...fD],[
+    {label:'Historical',data:[...hV,...new Array(fD.length).fill(null)],borderColor:'#2563eb',backgroundColor:'rgba(37,99,235,0.06)',fill:true,tension:0.3,pointRadius:2,borderWidth:2},
+    {label:'Forecast',data:[...new Array(hD.length).fill(null),...fV],borderColor:'#f59e0b',borderDash:[6,4],backgroundColor:'rgba(245,158,11,0.04)',fill:true,tension:0.3,pointRadius:3,borderWidth:2}
+  ]);
+
+  const fi=Object.entries(ml.feature_importance).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  makeChart('chart-feature-imp','bar',fi.map(e=>e[0]),[{label:'Importance',data:fi.map(e=>e[1]),backgroundColor:PALETTE,borderRadius:4}],{indexAxis:'y',plugins:{legend:{display:false}}});
+
+  document.getElementById('model-eval-text').innerHTML=`
+    <span class="ev-label">Algorithm</span>&nbsp;&nbsp;<span class="ev-val">Gradient Boosting Regressor</span><br>
+    <span class="ev-label">Features</span>&nbsp;&nbsp;&nbsp;<span class="ev-val">16 engineered variables</span><br>
+    <span class="ev-label">Training</span>&nbsp;&nbsp;&nbsp;<span class="ev-val">80% historical split</span><br>
+    <span class="ev-label">R² Score</span>&nbsp;&nbsp;<span class="ev-val" style="color:#10b981">${(m.r2*100).toFixed(1)}% variance explained</span><br>
+    <span class="ev-label">MAPE</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="ev-val">${m.mape}% mean error</span><br>
+    <span class="ev-label">Lag Features</span>&nbsp;<span class="ev-val">1d · 7d · 14d · 30d</span><br>
+    <span class="ev-label">Rolling Windows</span>&nbsp;<span class="ev-val">7d · 14d · 30d</span><br>
+    <span class="ev-label">Horizon</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="ev-val">30-day forecast</span>
+  `;
+}
+
+async function loadSegmentCharts(){
+  const ml=await fetch('/api/ml/segments').then(r=>r.json());
+  makeChart('chart-clusters','doughnut',ml.segment_counts.map(d=>d.Segment),[{data:ml.segment_counts.map(d=>d.Count),backgroundColor:PALETTE,borderWidth:2,borderColor:'#fff'}],{plugins:{legend:{position:'right',labels:{color:'#525f7f',font:{size:11},boxWidth:10}}}});
+  const sc={Champions:'#2563eb',Loyal:'#10b981',Potential:'#f59e0b','At Risk':'#ef4444'};
+  const sbg={Champions:'rgba(37,99,235,0.1)',Loyal:'rgba(16,185,129,0.1)',Potential:'rgba(245,158,11,0.1)','At Risk':'rgba(239,68,68,0.1)'};
+  document.getElementById('cluster-table').innerHTML=`
+    <thead><tr><th>Segment</th><th>Customers</th><th>Avg Recency</th><th>Avg Frequency</th><th>Avg Revenue</th></tr></thead>
+    <tbody>${ml.cluster_stats.map(s=>`
+      <tr>
+        <td><span class="seg-pill" style="color:${sc[s.SegmentLabel]||'#525f7f'};background:${sbg[s.SegmentLabel]||'#f0f2f8'}">${s.SegmentLabel}</span></td>
+        <td>${s.Count.toLocaleString()}</td>
+        <td>${s.Avg_Recency}d</td>
+        <td>${s.Avg_Frequency}×</td>
+        <td>£${Math.round(s.Avg_Monetary).toLocaleString()}</td>
+      </tr>`).join('')}
+    </tbody>`;
+}
+
+// CHAT
+function handleKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
+
+function addMsg(role,text){
+  const el=document.createElement('div');el.className=`msg ${role}`;
+  const av=role==='ai'?'🤖':'👤';
+  const r=text.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\n/g,'<br>');
+  el.innerHTML=`<div class="msg-avatar">${av}</div><div class="msg-bubble">${r}</div>`;
+  document.getElementById('chat-messages').appendChild(el);
+  document.getElementById('chat-messages').scrollTop=99999;
+}
+
+function addTyping(){const el=document.createElement('div');el.className='msg ai';el.id='typing-msg';el.innerHTML=`<div class="msg-avatar">🤖</div><div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;document.getElementById('chat-messages').appendChild(el);document.getElementById('chat-messages').scrollTop=99999;}
+function removeTyping(){document.getElementById('typing-msg')?.remove();}
+
+async function sendMessage(){
+  const inp=document.getElementById('chat-input');const msg=inp.value.trim();if(!msg)return;
+  inp.value='';addMsg('user',msg);document.getElementById('send-btn').disabled=true;addTyping();
+  try{
+    const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:msg,history:chatHistory,api_key:apiKey})});
+    const d=await res.json();removeTyping();addMsg('ai',d.response);
+    chatHistory.push({user:msg,assistant:d.response});if(chatHistory.length>20)chatHistory=chatHistory.slice(-20);
+  }catch(e){removeTyping();addMsg('ai','Connection error. Please try again.');}
+  document.getElementById('send-btn').disabled=false;
+}
+
+function askQ(q){document.getElementById('chat-input').value=q;sendMessage();}
+function clearChat(){chatHistory=[];document.getElementById('chat-messages').innerHTML='';addMsg('ai','Chat cleared. How can I help you today?');}
+
+async function generateInsights(){
+  const box=document.getElementById('insights-content');box.innerHTML='<em>Generating insights...</em>';
+  try{
+    const res=await fetch('/api/insights',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({api_key:apiKey})});
+    const d=await res.json();
+    if(d.insights){box.innerHTML=d.insights.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');}
+    else box.innerHTML='<em>Please save your API key first.</em>';
+  }catch(e){box.innerHTML='<em style="color:#ef4444">Error generating insights.</em>';}
+}
+
+
+function toggleTopic(header) {
+  const questions = header.nextElementSibling;
+  const isOpen = header.classList.contains('open');
+  // close all
+  document.querySelectorAll('.topic-header').forEach(h => {
+    h.classList.remove('open');
+    h.nextElementSibling.classList.remove('open');
+  });
+  // open clicked if was closed
+  if (!isOpen) {
+    header.classList.add('open');
+    questions.classList.add('open');
+  }
+}
+
+pollStatus();
+checkKeyStatus();
+</script>
+</body>
+</html>
