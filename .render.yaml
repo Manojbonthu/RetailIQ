@@ -2,8 +2,12 @@ services:
   - type: web
     name: retailiq
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app --workers 1 --threads 2 --timeout 300 --bind 0.0.0.0:$PORT
+    # Build step: install deps AND pre-train models
+    # This runs with more RAM/time than the free runtime
+    buildCommand: pip install -r requirements.txt && python pretrain.py
+    # Start step: cache already exists → app is ready in seconds
+    startCommand: gunicorn app:app --workers 1 --threads 2 --timeout 120 --bind 0.0.0.0:$PORT
     envVars:
       - key: PYTHON_VERSION
         value: 3.11.0
+    healthCheckPath: /api/status
