@@ -28,6 +28,28 @@ def find_data():
         if os.path.exists(p): return p
     return None
 
+def find_or_download_data():
+    """Find dataset locally, or download it from UCI if missing."""
+    path = find_data()
+    if path:
+        return path
+
+    # Auto-download from UCI Machine Learning Repository
+    import urllib.request
+    save_path = os.path.join(BASE_DIR, 'data', 'Online_Retail.xlsx')
+    os.makedirs(os.path.join(BASE_DIR, 'data'), exist_ok=True)
+
+    url = "https://archive.ics.uci.edu/ml/machine-learning-databases/00352/Online%20Retail.xlsx"
+    print(f'[RetailIQ] Dataset not found locally — downloading from UCI...')
+    _state['status_msg'] = 'Downloading dataset (one-time ~30s)...'
+    try:
+        urllib.request.urlretrieve(url, save_path)
+        print(f'[RetailIQ] Dataset downloaded to {save_path}')
+        return save_path
+    except Exception as e:
+        print(f'[RetailIQ] Download failed: {e}')
+        return None
+
 def _build_context(summary):
     ml = _state['ml']
     ctx = {
@@ -67,9 +89,9 @@ def boot():
                 return
 
         print('[RetailIQ] First run — training models (one-time ~3 min)...')
-        data_path = find_data()
+        data_path = find_or_download_data()
         if not data_path:
-            _state['error'] = 'Dataset not found. Place Online_Retail.xlsx in the data/ folder.'
+            _state['error'] = 'Dataset not found. Place Online_Retail.xlsx in the data/ folder or check internet connection.'
             return
 
         from utils.data_processor import load_and_clean_data, compute_kpis, get_summary_stats
