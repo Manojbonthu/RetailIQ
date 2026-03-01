@@ -1,4 +1,4 @@
-import os, sys, json, warnings, threading
+import os, sys, json, warnings, threading, gc
 warnings.filterwarnings('ignore')
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
@@ -28,27 +28,7 @@ def find_data():
         if os.path.exists(p): return p
     return None
 
-def find_or_download_data():
-    """Find dataset locally, or download it from UCI if missing."""
-    path = find_data()
-    if path:
-        return path
-
-    # Auto-download from UCI Machine Learning Repository
-    import urllib.request
-    save_path = os.path.join(BASE_DIR, 'data', 'Online_Retail.xlsx')
-    os.makedirs(os.path.join(BASE_DIR, 'data'), exist_ok=True)
-
-    url = "https://archive.ics.uci.edu/ml/machine-learning-databases/00352/Online%20Retail.xlsx"
-    print(f'[RetailIQ] Dataset not found locally — downloading from UCI...')
-    _state['status_msg'] = 'Downloading dataset (one-time ~30s)...'
-    try:
-        urllib.request.urlretrieve(url, save_path)
-        print(f'[RetailIQ] Dataset downloaded to {save_path}')
-        return save_path
-    except Exception as e:
-        print(f'[RetailIQ] Download failed: {e}')
-        return None
+CACHE_VERSION = 3
 
 def _build_context(summary):
     ml = _state['ml']
@@ -62,36 +42,43 @@ def _build_context(summary):
     _state['context'] = ctx
     set_data_context(ctx)
 
-# Bump this whenever you change data_processor or chatbot
-# It auto-deletes old cache so data rebuilds fresh
-CACHE_VERSION = 2
-
 def boot():
     try:
+        # ── 1. Try loading pre-built cache first (fastest path) ──────────────
         if os.path.exists(CACHE_FILE):
             _state['status_msg'] = 'Loading cached data...'
-            print('[RetailIQ] Cache found — checking version...')
-            master = joblib.load(CACHE_FILE)
+            print('[RetailIQ] Cache found — loading...')
+            try:
+                master    = joblib.load(CACHE_FILE)
+                cache_ver = master.get('cache_version', 1)
+                summary   = master.get('summary', '')
 
-            cached_summary = master.get('summary', '')
-            cache_ver      = master.get('cache_version', 1)
+                if cache_ver >= CACHE_VERSION and 'MONTHLY REVENUE BREAKDOWN' in summary:
+                    _state['kpis'] = master['kpis']
+                    _state['ml']   = master['ml']
+                    _build_context(summary)
+                    _state['ready'] = True
+                    print('[RetailIQ] Ready instantly from cache!')
+                    return
+                else:
+                    print('[RetailIQ] Stale cache — rebuilding...')
+                    os.remove(CACHE_FILE)
+                    del master
+                    gc.collect()
+            except Exception as e:
+                print(f'[RetailIQ] Cache load failed: {e} — rebuilding...')
+                if os.path.exists(CACHE_FILE):
+                    os.remove(CACHE_FILE)
 
-            if cache_ver < CACHE_VERSION or 'MONTHLY REVENUE BREAKDOWN' not in cached_summary:
-                print('[RetailIQ] Old cache — rebuilding with full data context...')
-                os.remove(CACHE_FILE)
-                # fall through to retrain
-            else:
-                _state['kpis'] = master['kpis']
-                _state['ml']   = master['ml']
-                _build_context(master['summary'])
-                _state['ready'] = True
-                print('[RetailIQ] Ready instantly from cache!')
-                return
-
-        print('[RetailIQ] First run — training models (one-time ~3 min)...')
-        data_path = find_or_download_data()
+        # ── 2. Train from scratch ─────────────────────────────────────────────
+        print('[RetailIQ] Training models (first run, ~3 min on free tier)...')
+        data_path = find_data()
         if not data_path:
-            _state['error'] = 'Dataset not found. Place Online_Retail.xlsx in the data/ folder or check internet connection.'
+            _state['error'] = (
+                'Dataset not found. '
+                'Make sure data/Online_Retail.xlsx is committed to your GitHub repo.'
+            )
+            print(f'[RetailIQ] ERROR: {_state["error"]}')
             return
 
         from utils.data_processor import load_and_clean_data, compute_kpis, get_summary_stats
@@ -99,43 +86,57 @@ def boot():
                                      train_customer_cluster_model,
                                      train_product_forecast)
 
-        _state['status_msg'] = 'Loading transactions...'
+        _state['status_msg'] = 'Loading & cleaning data...'
         df = load_and_clean_data(data_path)
         print(f'[RetailIQ] Loaded {len(df):,} records')
+        gc.collect()
 
         _state['status_msg'] = 'Computing KPIs...'
         kpis = compute_kpis(df)
+        gc.collect()
 
-        _state['status_msg'] = 'Training forecast model...'
+        _state['status_msg'] = 'Training revenue forecast...'
         metrics, forecast, feat_imp, historical = train_revenue_forecast_model(df)
+        gc.collect()
 
         _state['status_msg'] = 'Clustering customers...'
         seg_counts, cluster_stats, _ = train_customer_cluster_model(df)
+        gc.collect()
 
         _state['status_msg'] = 'Analysing products...'
         top_products, product_trends = train_product_forecast(df)
 
+        _state['status_msg'] = 'Building summary...'
         summary = get_summary_stats(df)
+
+        # Free the big DataFrame before saving cache
+        del df
+        gc.collect()
+
         ml = {
-            'forecast_metrics': metrics,
-            'revenue_forecast': forecast,
+            'forecast_metrics':  metrics,
+            'revenue_forecast':  forecast,
             'feature_importance': feat_imp,
             'historical_revenue': historical,
-            'segment_counts':   seg_counts,
-            'cluster_stats':    cluster_stats,
-            'top_products':     top_products,
-            'product_trends':   product_trends,
+            'segment_counts':    seg_counts,
+            'cluster_stats':     cluster_stats,
+            'top_products':      top_products,
+            'product_trends':    product_trends,
         }
 
         master = {
-            'kpis': kpis,
-            'ml':   ml,
-            'summary': summary,
-            'cache_version': CACHE_VERSION
+            'kpis':          kpis,
+            'ml':            ml,
+            'summary':       summary,
+            'cache_version': CACHE_VERSION,
         }
+
         os.makedirs(os.path.join(BASE_DIR, 'models'), exist_ok=True)
-        joblib.dump(master, CACHE_FILE)
-        print('[RetailIQ] Cache saved — future starts will be instant!')
+        try:
+            joblib.dump(master, CACHE_FILE, compress=3)
+            print('[RetailIQ] Cache saved — future starts will be instant!')
+        except Exception as e:
+            print(f'[RetailIQ] Cache save failed (non-fatal): {e}')
 
         _state['kpis'] = kpis
         _state['ml']   = ml
@@ -143,6 +144,9 @@ def boot():
         _state['ready'] = True
         print('[RetailIQ] System ready!')
 
+    except MemoryError:
+        _state['error'] = 'Out of memory. Render free tier has 512MB RAM — try upgrading or reducing data.'
+        print(f'[RetailIQ] MEMORY ERROR')
     except Exception as e:
         import traceback
         _state['error'] = str(e)
@@ -150,6 +154,8 @@ def boot():
         traceback.print_exc()
 
 threading.Thread(target=boot, daemon=False).start()
+
+# ── Routes ────────────────────────────────────────────────────────────────────
 
 @app.route('/')
 def index(): return render_template('index.html')
@@ -160,7 +166,7 @@ def status():
         'ready':   _state['ready'],
         'error':   _state['error'],
         'message': _state['status_msg'],
-        'cached':  os.path.exists(CACHE_FILE)
+        'cached':  os.path.exists(CACHE_FILE),
     })
 
 @app.route('/api/kpis')
@@ -214,7 +220,7 @@ def ml_forecast():
         'metrics':            ml['forecast_metrics'],
         'forecast':           ml['revenue_forecast'],
         'historical':         ml['historical_revenue'],
-        'feature_importance': ml['feature_importance']
+        'feature_importance': ml['feature_importance'],
     })
 
 @app.route('/api/ml/segments')
@@ -223,7 +229,7 @@ def ml_segments():
     ml = _state['ml']
     return jsonify({
         'segment_counts': ml['segment_counts'],
-        'cluster_stats':  ml['cluster_stats']
+        'cluster_stats':  ml['cluster_stats'],
     })
 
 @app.route('/api/ml/products')
@@ -232,7 +238,7 @@ def ml_products():
     ml = _state['ml']
     return jsonify({
         'top_products':   ml['top_products'],
-        'product_trends': ml['product_trends']
+        'product_trends': ml['product_trends'],
     })
 
 @app.route('/api/chat', methods=['POST'])
@@ -273,7 +279,7 @@ def key_status():
     k = get_saved_key()
     return jsonify({
         'has_key': bool(k),
-        'preview': k[:12] + '...' if k else ''
+        'preview': k[:12] + '...' if k else '',
     })
 
 @app.route('/api/cache/status')
