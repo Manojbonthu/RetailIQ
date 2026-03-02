@@ -1090,156 +1090,6 @@ body {
   .quick-panel { display: none; }
   .kpi-row { grid-template-columns: repeat(2, 1fr); }
 }
-
-.sidebar-mobile-api {
-  display: none;
-  padding: 14px 0 4px;
-}
-@media (max-width: 900px) {
-  .sidebar-mobile-api { display: block; }
-}
-
-
-.mobile-menu-btn {
-  display: none;
-  background: none;
-  border: none;
-  color: white;
-  cursor: pointer;
-  padding: 6px;
-  border-radius: var(--radius);
-  transition: background 0.15s;
-  flex-shrink: 0;
-}
-.mobile-menu-btn:hover { background: rgba(255,255,255,0.1); }
-.mobile-menu-btn svg { display:block; }
-
-/* Sidebar overlay */
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
-  z-index: 998;
-}
-.sidebar-overlay.open { display: block; }
-
-/* =====================================================
-   TABLET (≤900px)
-   ===================================================== */
-@media (max-width: 900px) {
-  :root { --sidebar-w: 240px; }
-
-  .mobile-menu-btn { display: flex; align-items: center; justify-content: center; }
-
-  /* Hide nav links and api pill in navbar on mobile */
-  .nav-links { display: none; }
-  .api-pill { display: none; }
-  .status-badge span:not(.status-dot) { display: none; }
-  .status-badge { padding: 4px 8px; }
-
-  /* Sidebar slides off-screen by default */
-  .sidebar {
-    transform: translateX(-100%);
-    transition: transform 0.25s ease;
-    z-index: 999;
-    top: 0;
-    padding-top: calc(var(--nav-h) + 16px);
-    box-shadow: 2px 0 20px rgba(0,0,0,0.15);
-  }
-  .sidebar.open { transform: translateX(0); }
-
-  /* Main content takes full width */
-  .main-content {
-    margin-left: 0;
-    padding: 16px;
-  }
-
-  .ml-metrics-row { grid-template-columns: repeat(2, 1fr); }
-
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .chat-wrap {
-    height: calc(100vh - 130px);
-  }
-}
-
-/* =====================================================
-   MOBILE (≤600px)
-   ===================================================== */
-@media (max-width: 600px) {
-  :root { --nav-h: 52px; }
-
-  .topnav { padding: 0 12px; gap: 10px; }
-
-  .nav-brand-tag { display: none; }
-  .nav-brand-name { font-size: 15px; }
-  .nav-logo-icon { width: 24px; height: 24px; font-size: 12px; }
-
-  /* Show save key as small icon button instead */
-  .nav-right { gap: 6px; }
-  .btn.btn-ghost { display: none; } /* hide extra nav buttons */
-
-  .main-content { padding: 12px; }
-
-  .kpi-row { 
-    grid-template-columns: repeat(2, 1fr); 
-    gap: 10px;
-  }
-
-  .kpi-card { padding: 14px 14px; }
-  .kpi-value { font-size: 22px; }
-  .kpi-value.sm { font-size: 17px; }
-
-  .page-title { font-size: 17px; }
-  .page-subtitle { font-size: 12px; }
-
-  .ml-metrics-row { 
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
-  .ml-metric-val { font-size: 20px; }
-
-  .chart-card-body canvas { max-height: 200px !important; }
-
-  /* Chat on mobile */
-  .chat-wrap { 
-    height: calc(100vh - 110px);
-    grid-template-columns: 1fr;
-  }
-
-  .msg-bubble { max-width: 88%; font-size: 13px; }
-
-  .chat-input-row { padding: 8px 10px; }
-  .chat-textarea { font-size: 14px; height: 40px; }
-
-  /* Data table scrollable */
-  .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .data-table { min-width: 480px; }
-
-  /* Page header stacked */
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-    margin-bottom: 14px;
-    padding-bottom: 10px;
-  }
-  .page-actions { flex-wrap: wrap; gap: 6px; }
-  .btn-page { padding: 6px 10px; font-size: 12px; }
-
-  /* Reduce chart grid gaps */
-  .charts-grid { gap: 10px; }
-
-  /* Model eval text */
-  #model-eval-text { font-size: 12px; line-height: 1.9; }
-
-  .toast { bottom: 12px; right: 12px; left: 12px; text-align: center; }
-}
 </style>
 </head>
 <body>
@@ -1256,14 +1106,8 @@ body {
 
 <div class="toast" id="toast"></div>
 
-<!-- SIDEBAR OVERLAY (mobile) -->
-<div id="sidebar-overlay" class="sidebar-overlay" onclick="closeSidebar()"></div>
-
 <!-- TOP NAVBAR -->
 <nav class="topnav">
-  <button class="mobile-menu-btn" id="hamburger-btn" onclick="toggleSidebar()" aria-label="Menu">
-    <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-  </button>
   <div class="nav-brand">
     <div class="nav-logo-icon">R</div>
     <span class="nav-brand-name">RetailIQ</span>
@@ -1315,31 +1159,22 @@ body {
 <div class="app-layout">
 
   <!-- SIDEBAR -->
-  <aside class="sidebar" id="sidebar">
-    <!-- Mobile API key input (only visible on mobile) -->
-    <div class="sidebar-mobile-api">
-      <div style="font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted);padding:0 12px 6px;">API Key</div>
-      <div style="padding:0 8px 8px;display:flex;gap:6px;">
-        <input type="password" id="api-key-input-mobile" placeholder="Paste API key..." style="flex:1;background:var(--page-bg);border:1px solid var(--card-border);border-radius:var(--radius);padding:7px 10px;font-size:12px;outline:none;font-family:'Inter',sans-serif;color:var(--text-primary);">
-        <button onclick="saveApiKeyMobile()" style="background:var(--blue);color:white;border:none;border-radius:var(--radius);padding:7px 10px;font-size:11px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;">Save</button>
-      </div>
-    </div>
-    <div class="sidebar-divider" style="margin-top:0"></div>
+  <aside class="sidebar">
     <div class="sidebar-section">
       <div class="sidebar-section-label">Analytics</div>
-      <div class="sidebar-item active" onclick="showPage('dashboard',this);closeSidebar()">
+      <div class="sidebar-item active" onclick="showPage('dashboard',this)">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>
         Overview
       </div>
-      <div class="sidebar-item" onclick="showPage('revenue',this);closeSidebar()">
+      <div class="sidebar-item" onclick="showPage('revenue',this)">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/></svg>
         Revenue Analysis
       </div>
-      <div class="sidebar-item" onclick="showPage('customers',this);closeSidebar()">
+      <div class="sidebar-item" onclick="showPage('customers',this)">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
         Customers
       </div>
-      <div class="sidebar-item" onclick="showPage('products',this);closeSidebar()">
+      <div class="sidebar-item" onclick="showPage('products',this)">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
         Products
       </div>
@@ -1349,11 +1184,11 @@ body {
 
     <div class="sidebar-section">
       <div class="sidebar-section-label">Predictions</div>
-      <div class="sidebar-item" onclick="showPage('forecast',this);closeSidebar()">
+      <div class="sidebar-item" onclick="showPage('forecast',this)">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M2 20h20M4 20V10l8-6 8 6v10"/></svg>
         Revenue Forecast
       </div>
-      <div class="sidebar-item" onclick="showPage('segments',this);closeSidebar()">
+      <div class="sidebar-item" onclick="showPage('segments',this)">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20M2 12h20"/></svg>
         ML Segments
       </div>
@@ -1363,7 +1198,7 @@ body {
 
     <div class="sidebar-section">
       <div class="sidebar-section-label">Intelligence</div>
-      <div class="sidebar-item" onclick="showPage('chat',this);closeSidebar()">
+      <div class="sidebar-item" onclick="showPage('chat',this)">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
         AI Analyst Chat
       </div>
@@ -2050,28 +1885,6 @@ function toggleTopic(header) {
   if (!isOpen) {
     header.classList.add('open');
     questions.classList.add('open');
-  }
-}
-
-
-// Mobile sidebar
-function toggleSidebar(){
-  const s=document.getElementById('sidebar');
-  const o=document.getElementById('sidebar-overlay');
-  const open=s.classList.toggle('open');
-  o.classList.toggle('open',open);
-}
-function closeSidebar(){
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebar-overlay').classList.remove('open');
-}
-function saveApiKeyMobile(){
-  const v=document.getElementById('api-key-input-mobile').value.trim();
-  if(v){
-    apiKey=v;
-    const desktop=document.getElementById('api-key-input');
-    if(desktop) desktop.value=v;
-    saveApiKey();
   }
 }
 
