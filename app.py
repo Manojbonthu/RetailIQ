@@ -153,7 +153,7 @@ def boot():
         print(f'[RetailIQ] Boot error: {e}')
         traceback.print_exc()
 
-threading.Thread(target=boot, daemon=False).start()
+threading.Thread(target=boot, daemon=True).start()
 
 # ── Routes ────────────────────────────────────────────────────────────────────
 
